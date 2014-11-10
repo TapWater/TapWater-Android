@@ -7,4 +7,10 @@
         android:title="History"
         android:orderInCategory="100"
         android:showAsAction="never" />
+
+    <item
+        android:id="@+id/logout"
+        android:title="Log Out"
+        android:orderInCategory="100"
+        android:showAsAction="never" />
 </menu>

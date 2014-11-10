@@ -87,4 +87,9 @@ public class Drink {
     public void addBottle() {
         ounces = ounces + 16;
     }
+
+    @Override
+    public String toString() {
+        return uuid + " " + category + " " + drink_date;
+    }
 }

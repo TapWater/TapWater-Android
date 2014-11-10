@@ -1,10 +1,15 @@
-package com.example.cody.tapwater;
+package com.example.cody.tapwater.asyncs;
 
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.example.cody.tapwater.callbacks.CallBackListenerMain;
+import com.example.cody.tapwater.database.DataSource;
+import com.example.cody.tapwater.objects.Helper;
+import com.example.cody.tapwater.objects.User;
+import com.example.cody.tapwater.activities.MainActivity;
 import com.google.gson.Gson;
 
 import java.io.BufferedReader;

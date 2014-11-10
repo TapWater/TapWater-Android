@@ -1,4 +1,4 @@
-package com.example.cody.tapwater;
+package com.example.cody.tapwater.objects;
 
 /**
  * Created by Cody on 11/2/2014.

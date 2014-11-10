@@ -1,4 +1,4 @@
-package com.example.cody.tapwater;
+package com.example.cody.tapwater.database;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;

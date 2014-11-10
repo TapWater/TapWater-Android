@@ -1,4 +1,4 @@
-package com.example.cody.tapwater;
+package com.example.cody.tapwater.activities;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -21,15 +21,22 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.cody.tapwater.asyncs.AuthenticateUserAsync;
+import com.example.cody.tapwater.callbacks.CallBackListenerMain;
+import com.example.cody.tapwater.asyncs.CreateDrinkAsync;
+import com.example.cody.tapwater.asyncs.CreateUserAsync;
+import com.example.cody.tapwater.database.DataSource;
+import com.example.cody.tapwater.objects.Drink;
+import com.example.cody.tapwater.objects.Helper;
+import com.example.cody.tapwater.asyncs.LoadDrinksAsync;
+import com.example.cody.tapwater.R;
+import com.example.cody.tapwater.objects.ServerDrink;
+import com.example.cody.tapwater.objects.ServerUser;
+import com.example.cody.tapwater.database.TapOpenHelper;
+import com.example.cody.tapwater.objects.User;
 import com.google.gson.Gson;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Dictionary;
-import java.util.Locale;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.TimeUnit;
 
 
 public class MainActivity extends Activity {

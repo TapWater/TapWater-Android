@@ -1,4 +1,4 @@
-package com.example.cody.tapwater;
+package com.example.cody.tapwater.objects;
 
 import android.app.Activity;
 import android.content.Context;

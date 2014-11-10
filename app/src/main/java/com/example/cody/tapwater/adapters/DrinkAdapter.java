@@ -1,4 +1,4 @@
-package com.example.cody.tapwater;
+package com.example.cody.tapwater.adapters;
 
 
 import android.content.Context;
@@ -7,6 +7,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
+
+import com.example.cody.tapwater.database.DataSource;
+import com.example.cody.tapwater.objects.Drink;
+import com.example.cody.tapwater.R;
 
 import java.util.ArrayList;
 import java.util.Calendar;

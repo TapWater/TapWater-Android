@@ -1,8 +1,6 @@
 package com.example.cody.tapwater.asyncs;
 
-/**
- * Created by Cody on 11/2/2014.
- */
+// TODO: Make this!
 public class SyncDrinksAsync {
 
 }

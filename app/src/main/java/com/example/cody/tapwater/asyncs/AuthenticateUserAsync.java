@@ -1,3 +1,16 @@
+/****************************************************************************************
+ /*
+ /* FILE NAME: AuthenticateUserAsync.java
+ /*
+ /* DESCRIPTION: Asynchronous method to POST User credentials to the server in order to log in.
+ /*
+ /* REFERENCE: Called from MainActivity Log In prompt.
+ /*
+ /* WRITTEN BY: Cody Rogers
+ /* DATE: 10/27/14
+ /*
+ /****************************************************************************************/
+
 package com.example.cody.tapwater.asyncs;
 
 import android.app.ProgressDialog;
@@ -29,11 +42,23 @@ public class AuthenticateUserAsync extends AsyncTask<String, Void, Integer> {
 
     private CallBackListenerMain mListener;
 
+    /**
+     *
+     * Constructor for Async to execute task.
+     *
+     * @param c: Context from parent activity.
+     * @param l: Callback from MainActivity.
+     */
     public AuthenticateUserAsync(Context c, CallBackListenerMain l) {
         context = c;
         mListener = l;
     }
 
+    /**
+     *
+     * Called before task is executed to prepare progressDialog and objects.
+     *
+     */
     @Override
     protected void onPreExecute() {
         datasource = new DataSource(context);
@@ -42,16 +67,29 @@ public class AuthenticateUserAsync extends AsyncTask<String, Void, Integer> {
         progressDialog = ProgressDialog.show(context, "Logging In", "Please wait...", true);
     }
 
-    ;
-
+    /**
+     *
+     * Task to be executed asynchronously. POSTs User credentials to server and inserts logged in User into DB.
+     *
+     * @param json: JSON string representing User.
+     * @return integer code for success or failure.
+     */
     @Override
     protected Integer doInBackground(String... json) {
+
+        // Default value for code.
         int code = 0;
+
+        // Object to parse json.
         Gson gson = new Gson();
+
+        // If not connected to internet, return code = 0; else, continue task.
         if (helper.haveNetworkConnection() == false) {
             return code;
         } else {
             try {
+
+                // Set up URL and connection headers.
                 url = helper.AUTHENTICATE_USER_URL;
                 HttpURLConnection c = (HttpURLConnection) new URL(url)
                         .openConnection();
@@ -59,13 +97,17 @@ public class AuthenticateUserAsync extends AsyncTask<String, Void, Integer> {
                 c.setRequestProperty("Accept", "application/json");
                 c.setRequestProperty("Content-type", "application/json");
                 c.setDoOutput(true);
+
+                // Write json to server.
                 OutputStreamWriter out = new OutputStreamWriter(c.getOutputStream());
                 out.write(json[0]);
                 out.close();
 
+                // Get response from server and see if POST was successful.
                 int responseCode = c.getResponseCode();
-                Log.i(MainActivity.TAG, json[0] + " " + responseCode + " " + c.getResponseMessage());
                 if (responseCode == 200 || responseCode == 201) {
+
+                    // Parse response from server into reader, append to buffer.
                     BufferedReader in = new BufferedReader(new InputStreamReader(c.getInputStream()));
                     String inputLine;
                     buff = new StringBuffer();
@@ -75,12 +117,16 @@ public class AuthenticateUserAsync extends AsyncTask<String, Void, Integer> {
                     }
                     in.close();
 
+                    // Create user object, mark them as logged in, insert into DB.
                     User user = gson.fromJson(buff.toString(), User.class);
                     user.setLoggedIn(1);
                     datasource.insertUser(user);
 
+                    // Indicate success.
                     code = 1;
                 } else {
+
+                    // Indicate failure.
                     code = 2;
                 }
 
@@ -91,6 +137,12 @@ public class AuthenticateUserAsync extends AsyncTask<String, Void, Integer> {
         }
     }
 
+    /**
+     *
+     * Execute after doInBackground. Dismiss dialog and send code to callback.
+     *
+     * @param in: Code from doInBackground to send to MainActivity.
+     */
     @Override
     protected void onPostExecute(Integer in) {
         super.onPostExecute(in);
@@ -99,6 +151,11 @@ public class AuthenticateUserAsync extends AsyncTask<String, Void, Integer> {
         helper.enableScreenRotation();
     }
 
+    /**
+     *
+     * Execute if task is cancelled. Dismiss dialog and indicate failure to callback.
+     *
+     */
     @Override
     protected void onCancelled() {
         super.onCancelled();

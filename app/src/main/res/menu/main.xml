@@ -3,8 +3,8 @@
     tools:context=".MainActivity">
 
     <item
-        android:id="@+id/history"
-        android:title="History"
+        android:id="@+id/library"
+        android:title="Library"
         android:orderInCategory="100"
         android:showAsAction="never" />
 

@@ -15,11 +15,15 @@ package com.example.cody.tapwater.asyncs;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.example.cody.tapwater.callbacks.CallBack;
+import com.example.cody.tapwater.callbacks.CallBackListenerLibrary;
 import com.example.cody.tapwater.callbacks.CallBackListenerMain;
 import com.example.cody.tapwater.database.DataSource;
+import com.example.cody.tapwater.database.TapOpenHelper;
 import com.example.cody.tapwater.objects.Drinks;
 import com.example.cody.tapwater.objects.Helper;
 import com.example.cody.tapwater.activities.MainActivity;
@@ -37,9 +41,10 @@ public class LoadDrinksAsync extends AsyncTask<Void, Void, Integer> {
     private Context context;
     private String url;
     private StringBuffer buff;
+    private String responseMessage;
     ProgressDialog progressDialog;
 
-    private CallBackListenerMain mListener;
+    private CallBack mListener;
 
     /**
      *
@@ -48,8 +53,13 @@ public class LoadDrinksAsync extends AsyncTask<Void, Void, Integer> {
      * @param c: Context from parent Activity.
      * @param l: Callback from MainActivity.
      */
-    public LoadDrinksAsync(Context c, CallBackListenerMain l) {
+    public LoadDrinksAsync(Context c, CallBack l) {
         context = c;
+        if (l instanceof CallBackListenerMain) {
+            System.out.print("FROM MAIN LOADED");
+        } else {
+            System.out.print("FROM LIB LOADED");
+        }
         mListener = l;
     }
 
@@ -63,7 +73,7 @@ public class LoadDrinksAsync extends AsyncTask<Void, Void, Integer> {
         datasource = new DataSource(context);
         helper = new Helper(context);
         helper.lockScreenRotation();
-        progressDialog = ProgressDialog.show(context, "Retrieving Tickets", "Please wait...", true);
+        progressDialog = ProgressDialog.show(context, "Retrieving Drinks", "Please wait...", true);
     }
 
     /**
@@ -97,6 +107,7 @@ public class LoadDrinksAsync extends AsyncTask<Void, Void, Integer> {
 
                 // Establish connection and get response. Continue if successful.
                 int responseCode = c.getResponseCode();
+                responseMessage = c.getResponseMessage();
                 if (responseCode == 200 || responseCode == 201) {
 
                     // Parse response to reader, append to buffer.
@@ -108,6 +119,11 @@ public class LoadDrinksAsync extends AsyncTask<Void, Void, Integer> {
                         buff.append(inputLine);
                     }
                     in.close();
+
+                    // Before inserting new drinks, delete the old ones
+                    TapOpenHelper th = new TapOpenHelper(context);
+                    SQLiteDatabase db = th.getWritableDatabase();
+                    th.resetDrinks(db);
 
                     // create ArrayList to store List of Drinks from server. Insert each drink into DB.
                     Drinks drinks = gson.fromJson(buff.toString(), Drinks.class);
@@ -134,7 +150,7 @@ public class LoadDrinksAsync extends AsyncTask<Void, Void, Integer> {
     @Override
     protected void onPostExecute(Integer in) {
         super.onPostExecute(in);
-        mListener.callbackLoadDrinks(in);
+        mListener.callbackLoadDrinks(in, responseMessage);
         progressDialog.dismiss();
         helper.enableScreenRotation();
     }
@@ -147,7 +163,8 @@ public class LoadDrinksAsync extends AsyncTask<Void, Void, Integer> {
     @Override
     protected void onCancelled() {
         progressDialog.dismiss();
-        mListener.callbackLoadDrinks(2);
+        responseMessage = "Cancelled drink retrieval";
+        mListener.callbackLoadDrinks(2, responseMessage);
         helper.enableScreenRotation();
     }
 }

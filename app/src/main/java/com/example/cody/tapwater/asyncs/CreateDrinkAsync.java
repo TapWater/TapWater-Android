@@ -38,6 +38,7 @@ public class CreateDrinkAsync extends AsyncTask<String, Void, Integer> {
     private Context context;
     private String url;
     private StringBuffer buff;
+    private String responseMessage;
     private Drink drink = new Drink();
     ProgressDialog progressDialog;
     private CallBackListenerMain mListener;
@@ -105,6 +106,7 @@ public class CreateDrinkAsync extends AsyncTask<String, Void, Integer> {
 
                 // Get response from server to see if POST was successful.
                 int responseCode = c.getResponseCode();
+                responseMessage = c.getResponseMessage();
                 if (responseCode == 200 || responseCode == 201) {
 
                     // Parse response from server to reader, append to StringBuffer
@@ -145,7 +147,7 @@ public class CreateDrinkAsync extends AsyncTask<String, Void, Integer> {
     @Override
     protected void onPostExecute(Integer in) {
         super.onPostExecute(in);
-        mListener.callbackCreateDrink(in, drink);
+        mListener.callbackCreateDrink(in, drink, responseMessage);
         progressDialog.dismiss();
         helper.enableScreenRotation();
     }
@@ -158,7 +160,8 @@ public class CreateDrinkAsync extends AsyncTask<String, Void, Integer> {
     @Override
     protected void onCancelled() {
         progressDialog.dismiss();
-        mListener.callbackCreateDrink(2, drink);
+        responseMessage = "Cancelled drink creation";
+        mListener.callbackCreateDrink(2, drink, responseMessage);
         helper.enableScreenRotation();
     }
 }

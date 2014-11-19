@@ -38,6 +38,7 @@ public class AuthenticateUserAsync extends AsyncTask<String, Void, Integer> {
     private Context context;
     private String url;
     private StringBuffer buff;
+    private String responseMessage;
     ProgressDialog progressDialog;
 
     private CallBackListenerMain mListener;
@@ -105,6 +106,7 @@ public class AuthenticateUserAsync extends AsyncTask<String, Void, Integer> {
 
                 // Get response from server and see if POST was successful.
                 int responseCode = c.getResponseCode();
+                responseMessage = c.getResponseMessage();
                 if (responseCode == 200 || responseCode == 201) {
 
                     // Parse response from server into reader, append to buffer.
@@ -125,7 +127,6 @@ public class AuthenticateUserAsync extends AsyncTask<String, Void, Integer> {
                     // Indicate success.
                     code = 1;
                 } else {
-
                     // Indicate failure.
                     code = 2;
                 }
@@ -146,7 +147,7 @@ public class AuthenticateUserAsync extends AsyncTask<String, Void, Integer> {
     @Override
     protected void onPostExecute(Integer in) {
         super.onPostExecute(in);
-        mListener.callbackAuthenticateUser(in);
+        mListener.callbackAuthenticateUser(in, responseMessage);
         progressDialog.dismiss();
         helper.enableScreenRotation();
     }
@@ -159,7 +160,8 @@ public class AuthenticateUserAsync extends AsyncTask<String, Void, Integer> {
     @Override
     protected void onCancelled() {
         super.onCancelled();
-        mListener.callbackAuthenticateUser(2);
+        responseMessage = "Cancelled Log In";
+        mListener.callbackAuthenticateUser(2, responseMessage);
         progressDialog.dismiss();
         helper.enableScreenRotation();
     }

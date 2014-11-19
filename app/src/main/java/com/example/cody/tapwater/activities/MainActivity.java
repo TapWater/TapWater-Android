@@ -33,6 +33,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.example.cody.tapwater.asyncs.AuthenticateUserAsync;
 import com.example.cody.tapwater.callbacks.CallBackListenerMain;
 import com.example.cody.tapwater.asyncs.CreateDrinkAsync;
@@ -47,6 +48,7 @@ import com.example.cody.tapwater.objects.ServerUser;
 import com.example.cody.tapwater.database.TapOpenHelper;
 import com.example.cody.tapwater.objects.User;
 import com.google.gson.Gson;
+
 import java.util.Calendar;
 
 
@@ -70,41 +72,48 @@ public class MainActivity extends Activity {
         /**
          * Called upon completion of CreateUserAsync. Toasts to user that a user was successfully created.
          *
-         * @param response: integer response that indicates success or failure.
+         * @param response:        integer response that indicates success or failure.
+         * @param responseMessage: Server's response.
          */
         @Override
-        public void callbackCreateUser(Integer response) {
+        public void callbackCreateUser(Integer response, String responseMessage) {
             Log.i(TAG, "callback called " + response);
             if (response == 1) {
                 alert.dismiss();
                 String message = "User created";
                 Toast.makeText(getBaseContext(), message, Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getBaseContext(), responseMessage, Toast.LENGTH_SHORT).show();
             }
         }
 
         /**
          * Called upon completion of CreateDrinkAsync. Updates total number of cups in DB and Toasts to user that the drink was successfully created.
          *
-         * @param response: integer response that indicates success or failure.
-         * @param d:        drink object returned to determine category of created drink.
+         * @param response:        integer response that indicates success or failure.
+         * @param d:               drink object returned to determine category of created drink.
+         * @param responseMessage: Server's response.
          */
         @Override
-        public void callbackCreateDrink(Integer response, Drink d) {
+        public void callbackCreateDrink(Integer response, Drink d, String responseMessage) {
             Log.i(TAG, "callback called " + response);
             if (response == 1) {
                 String message = d.getCategory() + " created";
                 cups.setText(String.valueOf(datasource.getTotalCups()) + " cups");
                 Toast.makeText(getBaseContext(), message, Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getBaseContext(), responseMessage, Toast.LENGTH_SHORT).show();
             }
         }
 
         /**
          * Called upon completion of AuthenticateUserAsync. Calls LoadDrinksAsync on success and Toasts to user that log in was successful.
          *
-         * @param response: integer response that indicates success or failure.
+         * @param response:        integer response that indicates success or failure.
+         * @param responseMessage: Server's response.
          */
         @Override
-        public void callbackAuthenticateUser(Integer response) {
+        public void callbackAuthenticateUser(Integer response, String responseMessage) {
             Log.i(TAG, "callback called " + response);
             if (response == 1) {
                 alert.dismiss();
@@ -112,21 +121,29 @@ public class MainActivity extends Activity {
                 LoadDrinksAsync async = new LoadDrinksAsync(context, new CallBack());
                 async.execute();
                 Toast.makeText(getBaseContext(), message, Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getBaseContext(), responseMessage, Toast.LENGTH_SHORT).show();
             }
         }
 
         /**
          * Called upon completion of LoadDrinkAsync. Toasts to user that drinks were loaded successfully. Updates total cups in DB accordingly.
          *
-         * @param response: integer response that indicates success or failure.
+         * @param response:        integer response that indicates success or failure.
+         * @param responseMessage: Server's response.
          */
         @Override
-        public void callbackLoadDrinks(Integer response) {
+        public void callbackLoadDrinks(Integer response, String responseMessage) {
             Log.i(TAG, "callback called " + response);
             if (response == 1) {
                 String message = "Drinks loaded";
+                if (swipeLayout.isRefreshing()) {
+                    swipeLayout.setRefreshing(false);
+                }
                 cups.setText(String.valueOf(datasource.getTotalCups()) + " cups");
                 Toast.makeText(getBaseContext(), message, Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getBaseContext(), responseMessage, Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -147,18 +164,13 @@ public class MainActivity extends Activity {
         datasource = new DataSource(context);
         helper = new Helper(context);
 
-        // TODO: Swipe to Load Drinks
         // Instantiate swipe layout for refresh actions and establish behavior.
         swipeLayout = (SwipeRefreshLayout) findViewById(R.id.swipe);
         swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        swipeLayout.setRefreshing(false);
-                    }
-                }, 5000);
+                LoadDrinksAsync async = new LoadDrinksAsync(context, new CallBack());
+                async.execute();
             }
         });
         swipeLayout.setColorScheme(android.R.color.holo_blue_bright,

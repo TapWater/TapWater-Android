@@ -65,7 +65,6 @@ public class TapOpenHelper extends SQLiteOpenHelper {
 
 
     /**
-     *
      * Creates tables of DB.
      *
      * @param db: Database object used to execute SQL
@@ -78,10 +77,9 @@ public class TapOpenHelper extends SQLiteOpenHelper {
     }
 
     /**
-     *
      * Upgrades DB when version number is iterated.
      *
-     * @param db: Database object used to execute SQL.
+     * @param db:         Database object used to execute SQL.
      * @param oldVersion: Previous DB version number.
      * @param newVersion: New DB version number.
      */
@@ -101,7 +99,6 @@ public class TapOpenHelper extends SQLiteOpenHelper {
 //    }
 
     /**
-     *
      * Drop all tables in DB
      *
      * @param db: Database object used to execute SQL.
@@ -113,7 +110,17 @@ public class TapOpenHelper extends SQLiteOpenHelper {
     }
 
     /**
+     * Delete Drinks prior to sync with server
      *
+     * @param db: Database object used to execute SQL.
+     */
+    public void resetDrinks(SQLiteDatabase db) {
+        db.execSQL("DROP TABLE IF EXISTS " + DRINK_TABLE_NAME);
+        db.execSQL(CREATE_DRINK_TABLE);
+        System.out.println("RESET DRINKS");
+    }
+
+    /**
      * Called when logging out. Drops all tables and recreates them empty.
      *
      * @param db: Database object used to execute SQL.

@@ -38,6 +38,7 @@ public class CreateUserAsync extends AsyncTask<String, Void, Integer> {
     private Context context;
     private String url;
     private StringBuffer buff;
+    private String responseMessage;
     ProgressDialog progressDialog;
 
     private CallBackListenerMain mListener;
@@ -64,7 +65,7 @@ public class CreateUserAsync extends AsyncTask<String, Void, Integer> {
         datasource = new DataSource(context);
         helper = new Helper(context);
         helper.lockScreenRotation();
-        progressDialog = ProgressDialog.show(context, "Logging In", "Please wait...", true);
+        progressDialog = ProgressDialog.show(context, "Registering", "Please wait...", true);
     }
 
     /**
@@ -105,6 +106,7 @@ public class CreateUserAsync extends AsyncTask<String, Void, Integer> {
 
                 // Get response from server, if successful, continue.
                 int responseCode = c.getResponseCode();
+                responseMessage = c.getResponseMessage();
                 if (responseCode == 200 || responseCode == 201) {
 
                     // Parse response into reader, append to buffer.
@@ -125,7 +127,6 @@ public class CreateUserAsync extends AsyncTask<String, Void, Integer> {
                     // Indicate success.
                     code = 1;
                 } else {
-
                     // Indicate failure.
                     code = 2;
                 }
@@ -146,7 +147,7 @@ public class CreateUserAsync extends AsyncTask<String, Void, Integer> {
     @Override
     protected void onPostExecute(Integer in) {
         super.onPostExecute(in);
-        mListener.callbackCreateUser(in);
+        mListener.callbackCreateUser(in, responseMessage);
         progressDialog.dismiss();
         helper.enableScreenRotation();
     }
@@ -159,7 +160,8 @@ public class CreateUserAsync extends AsyncTask<String, Void, Integer> {
     @Override
     protected void onCancelled() {
         progressDialog.dismiss();
-        mListener.callbackCreateUser(2);
+        responseMessage = "Cancelled Registration";
+        mListener.callbackCreateUser(2, responseMessage);
         helper.enableScreenRotation();
     }
 }

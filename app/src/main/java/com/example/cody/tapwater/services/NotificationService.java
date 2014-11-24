@@ -135,7 +135,7 @@ public class NotificationService extends Service {
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
         builder.setAutoCancel(true);
-        builder.setContentTitle("Notifier");
+        builder.setContentTitle("TapWater");
         builder.setContentText(notificationDrinksCalculation(Integer.valueOf(prefs.getString("goal", "0")), datasource.getTotalCups()*8));
         builder.setSmallIcon(R.drawable.waterdroplet);
         builder.setContentIntent(contentIntent);

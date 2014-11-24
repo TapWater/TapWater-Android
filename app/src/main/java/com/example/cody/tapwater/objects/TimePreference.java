@@ -3,6 +3,7 @@ package com.example.cody.tapwater.objects;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.preference.DialogPreference;
+import android.preference.Preference;
 import android.text.format.DateFormat;
 import android.util.AttributeSet;
 import android.view.View;
@@ -30,7 +31,6 @@ public class TimePreference extends DialogPreference {
 
     public TimePreference(Context ctxt, AttributeSet attrs) {
         super(ctxt, attrs);
-
         setPositiveButtonText("Set");
         setNegativeButtonText("Cancel");
     }

@@ -166,7 +166,7 @@ public class DataSource {
         // Establish initial values, set date format.
         Calendar saved = null;
         Calendar check = Calendar.getInstance();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssz", Locale.US);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.'000Z'", Locale.US);
         openRead();
 
         // Get drinks from DB, iterate though them.
@@ -209,7 +209,7 @@ public class DataSource {
     public Calendar getDateByUuid(String uuid) {
         // Initial values and set format.
         Calendar saved = null;
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssz", Locale.US);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.'000Z'", Locale.US);
         openRead();
 
         // Iterate through records with matching UUID in Drinks Table. Should only be 1 match.

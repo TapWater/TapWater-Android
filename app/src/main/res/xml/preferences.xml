@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+    <PreferenceScreen
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <EditTextPreference
+            android:key="goal"
+            android:title="Goal"
+            android:summary="Number of ounces to drink per day"
+            android:defaultValue="64" />
+        />
+
+        <com.example.cody.tapwater.objects.TimePreference
+            android:key="begin_time"
+            android:summary="Earliest time to receive notifications."
+            android:title="Begin Time"
+            />
+
+        <com.example.cody.tapwater.objects.TimePreference
+            android:key="end_time"
+            android:summary="Latest time to receive notifications."
+            android:title="End Time"
+            />
+
+        <EditTextPreference
+            android:key="prompts"
+            android:title="Prompts"
+            android:summary="Number of prompts in time period"
+            android:defaultValue="5" />
+            />
+
+        <CheckBoxPreference
+            android:key="notificationOnOff"
+            android:title="Send Drink Reminders?"
+            android:defaultValue="true"
+            />
+    </PreferenceScreen>

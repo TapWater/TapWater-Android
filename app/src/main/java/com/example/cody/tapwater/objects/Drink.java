@@ -48,7 +48,7 @@ public class Drink {
         uuid = UUID.randomUUID().toString();
 
         // Set drink date to formatted current time.
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssz", Locale.US);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.'000Z'", Locale.US);
         Calendar cal = Calendar.getInstance();
         drink_date = sdf.format(cal.getTime()).toString();
 

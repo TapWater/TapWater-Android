@@ -14,19 +14,19 @@
 package com.example.cody.tapwater.activities;
 
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.os.Handler;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.TaskStackBuilder;
+import android.os.SystemClock;
+import android.preference.PreferenceManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.Html;
 import android.util.Log;
@@ -40,6 +40,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.cody.tapwater.asyncs.AuthenticateUserAsync;
+import com.example.cody.tapwater.services.NotificationService;
 import com.example.cody.tapwater.callbacks.CallBackListenerMain;
 import com.example.cody.tapwater.asyncs.CreateDrinkAsync;
 import com.example.cody.tapwater.asyncs.CreateUserAsync;
@@ -53,7 +54,6 @@ import com.example.cody.tapwater.objects.ServerUser;
 import com.example.cody.tapwater.database.TapOpenHelper;
 import com.example.cody.tapwater.objects.User;
 import com.google.gson.Gson;
-
 import java.util.Calendar;
 
 
@@ -277,6 +277,10 @@ public class MainActivity extends Activity {
             return true;
 
             // Displays log out alert asking if user really wants to log out.
+        } else if (id == R.id.profile) {
+            Intent profile = new Intent(getBaseContext(), Profile.class);
+            startActivity(profile);
+            return true;
         } else if (id == R.id.logout) {
             logOutAlert();
             return true;
@@ -547,5 +551,29 @@ public class MainActivity extends Activity {
         String json = gson.toJson(s, ServerDrink.class);
         CreateDrinkAsync async = new CreateDrinkAsync(context, new CallBack());
         async.execute(json);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        System.out.println("Alarm manager setup");
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        int minutes = prefs.getInt("interval", 1);
+        AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
+        Intent i = new Intent(context, NotificationService.class);
+        PendingIntent pi = PendingIntent.getService(context, 0, i, 0);
+        am.cancel(pi);
+
+        // by my own convention, minutes <= 0 means notifications are disabled
+        if (minutes > 0) {
+            am.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                    SystemClock.elapsedRealtime() + minutes*60*1000,
+                    minutes*60*1000, pi);
+        }
+    }
+
+    public long notificationIntervalCalculation(int prompts, Calendar begin, Calendar end) {
+        long timeSpan = end.getTimeInMillis() - begin.getTimeInMillis();
+        return timeSpan / prompts;
     }
 }

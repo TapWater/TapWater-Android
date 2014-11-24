@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/TapWater.iml" filepath="$PROJECT_DIR$/TapWater.iml" />
+      <module fileurl="file://$PROJECT_DIR$/TapWater-Android.iml" filepath="$PROJECT_DIR$/TapWater-Android.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>

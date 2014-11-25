@@ -130,20 +130,34 @@ public class DataSource {
     public double getTotalCups() {
         int ounces = 0;
         double cups;
+        Calendar today = Calendar.getInstance();
+        Calendar dateCal = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.'000Z'", Locale.US);
         openRead();
 
         // Query Drinks table and iterate through all returned records
         Cursor c = qdb.query(true, TapOpenHelper.DRINK_TABLE_NAME, drinkColumns, null, null, null, null, null, null);
         while (c.moveToNext()) {
 
-            // If category is drink, add 4 ounces; if glass, add 8 ounces; if bottle, add 16 ounces.
-            String cat = c.getString(c.getColumnIndex(TapOpenHelper.COLUMN_CATEGORY));
-            if (cat.equals("drink")) {
-                ounces += 4;
-            } else if (cat.equals("glass")) {
-                ounces += 8;
-            } else if (cat.equals("bottle")) {
-                ounces += 16;
+            String date = c.getString(c.getColumnIndex(TapOpenHelper.COLUMN_DRINK_DATE));
+            try {
+                dateCal.setTime(sdf.parse(date));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            if (today.get(Calendar.DAY_OF_YEAR) == dateCal.get(Calendar.DAY_OF_YEAR) &&
+                today.get(Calendar.MONTH) == dateCal.get(Calendar.MONTH) &&
+                today.get(Calendar.YEAR) == dateCal.get(Calendar.YEAR)) {
+
+                // If category is drink, add 4 ounces; if glass, add 8 ounces; if bottle, add 16 ounces.
+                String cat = c.getString(c.getColumnIndex(TapOpenHelper.COLUMN_CATEGORY));
+                if (cat.equals("drink")) {
+                    ounces += 4;
+                } else if (cat.equals("glass")) {
+                    ounces += 8;
+                } else if (cat.equals("bottle")) {
+                    ounces += 16;
+                }
             }
         }
 

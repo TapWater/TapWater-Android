@@ -54,6 +54,9 @@ import com.example.cody.tapwater.objects.ServerUser;
 import com.example.cody.tapwater.database.TapOpenHelper;
 import com.example.cody.tapwater.objects.User;
 import com.google.gson.Gson;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 
@@ -558,22 +561,35 @@ public class MainActivity extends Activity {
         super.onResume();
         System.out.println("Alarm manager setup");
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        int minutes = prefs.getInt("interval", 1);
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+        String prompts = prefs.getString("prompts", "5");
+        String beginStr = prefs.getString("begin_time", "");
+        String endStr = prefs.getString("end_time", "");
+        Calendar beginCal = Calendar.getInstance();
+        Calendar endCal = Calendar.getInstance();
+        try {
+            beginCal.setTime(sdf.parse(beginStr));
+            endCal.setTime(sdf.parse(endStr));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        long interval = notificationIntervalCalculation(Integer.valueOf(prompts), beginCal, endCal);
         AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
         Intent i = new Intent(context, NotificationService.class);
         PendingIntent pi = PendingIntent.getService(context, 0, i, 0);
         am.cancel(pi);
 
         // by my own convention, minutes <= 0 means notifications are disabled
-        if (minutes > 0) {
+        if (interval > 0) {
             am.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                    SystemClock.elapsedRealtime() + minutes*60*1000,
-                    minutes*60*1000, pi);
+                    SystemClock.elapsedRealtime() + interval,
+                    interval, pi);
         }
     }
 
     public long notificationIntervalCalculation(int prompts, Calendar begin, Calendar end) {
         long timeSpan = end.getTimeInMillis() - begin.getTimeInMillis();
+        System.out.println(timeSpan / prompts);
         return timeSpan / prompts;
     }
 }
